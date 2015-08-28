@@ -1,1 +1,4 @@
-Hello, world!
+---
+layout: post
+title: Hello, world!
+---
