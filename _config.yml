@@ -5,3 +5,5 @@ description: amazingfate の blog
 url: amazingfate.github.io
 permalink: /posts/:title
 comments: true
+gems:
+      - jekyll-archives
