@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Mozc-ut -- A Better Japanese Input Method On Linux
+title: Mozc-Ut -- A Better Japanese Input Method On Linux
 ---
 As we know mozc is an opensource Japanese input method which is the base of Google Japanese Input Method. [Mozc-ut](http://www.geocities.jp/ep3797/mozc_01.html) adds some useful dictionaries such as:
 
