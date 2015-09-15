@@ -13,3 +13,4 @@ This is my own debain repo,where packages are built in debian sid.
 * libqtshadowsocks
 * mozc-ut
 * shadowsocks-qt5
+* shadowsocks-libev
