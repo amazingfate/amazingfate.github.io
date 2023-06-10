@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>海德沙龙刷机包</title>
+    <style>
+        .node circle {
+          fill: #fff;
+          stroke: steelblue;
+          stroke-width: 3px;
+        }
+
+        .node text { font: 14px sans-serif; }
+
+        .link {
+          fill: none;
+          stroke: #ccc;
+          stroke-width: 2px;
+        }
+    </style>
+</head>
+<body>
+<div id='headsalon-roadmap'>
+</div>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script>
+var margin = {top: 20, right: 10, bottom: 0, left: 10};
+var width = 900 - margin.right - margin.left;
+var height = 7000 - margin.top - margin.bottom;
+
+var tree = d3.layout.tree()
+    .size([width, height]);
+
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
+var svg = d3.select("#headsalon-roadmap").append("svg")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.json("roadmap.json", function(error, root) {
+    if (error) throw error;
+
+    // Compute the new tree layout.
+    var nodes = tree.nodes(root).reverse();
+
+    var max_left = 100;
+    var max_right = 100;
+    for (var i = nodes.length - 1; i >= 0; i--) {
+    if (nodes[i].depth == 0) {
+      nodes[i].x = 20;
+      nodes[i].y = width / 2;
+    } else if (nodes[i].parent == root) {
+      nodes[i].right = nodes[i].parent.children.indexOf(nodes[i]) % 2;
+      nodes[i].x = 60 + (nodes[i].right ? max_right : max_left);
+      if (nodes[i].right) {
+        max_right = nodes[i].x;
+      } else {
+        max_left = nodes[i].x;
+      }
+      nodes[i].y = nodes[i].parent.y - 15 + nodes[i].right * 30;
+    } else {
+      nodes[i].right = nodes[i].parent.right;
+      nodes[i].x = 35 + (nodes[i].right ? max_right : max_left);
+      nodes[i].y = nodes[i].right ? nodes[i].parent.y + 70 : nodes[i].parent.y - 70;
+      if (nodes[i].right) {
+        max_right = nodes[i].x;
+      } else {
+          max_left = nodes[i].x;
+      }
+    }
+    }
+
+    var node = svg.selectAll(".node")
+      .data(nodes)
+      .enter()
+      .append("g")
+      .attr("class", "node")
+      .attr('x', function(d) {return d.x;})
+      .attr('y', function(d) {return d.y;})
+      .attr("transform", function(d) {return "translate(" + d.y + "," + d.x + ")";});
+
+    node.append("circle")
+        .attr("r", 4.5);
+
+    node.filter(function(d){ return !d.children })
+      .append("a")
+      .style('fill', '#0645AD')
+      .attr("xlink:href", function(d){ return d.url })
+      .append("text")
+      .attr("dy", function(d) {return d.children ? -5 : 5;})
+      .attr("dx", function(d) {return d.right ? 10 : -10;})
+      .style("text-anchor", function(d) {return d.right ? 'start' : 'end';})
+      .text(function(d) { return d.name; });
+
+    node.filter(function(d){ return d.children && d != root})
+      .append("text")
+      .attr("dy", function(d) {return d.children ? -5 : 5;})
+      .attr("dx", function(d) {return d.right ? 10 : -10;})
+      .style("text-anchor", function(d) {return d.right ? 'start' : 'end';})
+      .text(function(d) { return d.name; });
+
+    node.filter(function(d){ return d == root})
+      .append("text")
+      .attr("dy", -10)
+      .attr("dx", 0)
+      .style("text-anchor", 'middle')
+      .text(function(d) { return d.name; });
+
+    var links = tree.links(nodes);
+
+    var link = svg.selectAll(".link")
+      .data(links)
+      .enter()
+      .append("path")
+      .attr("class", "link")
+      .attr("d", diagonal);
+});
+</script>
+</body>
+</html>
